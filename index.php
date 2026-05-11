@@ -28,12 +28,12 @@ if (isset($_POST['btnLogin'])) {
 
             if ($user['role'] == "admin") {
 
-                header("Location: admin-dashboard.php");
+                header("Location: __DIR__ . '/../admin/dashboard.php");
                 exit();
 
             } elseif ($user['role'] == "security") {
 
-                header("Location: security-dashboard.php");
+                header("Location: __DIR__ . '/../security/dashboard.php");
                 exit();
 
             } elseif ($user['role'] == "employee") {
@@ -47,6 +47,7 @@ if (isset($_POST['btnLogin'])) {
 
             }
         }
+
 
     } else {
 

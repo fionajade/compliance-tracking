@@ -8,47 +8,59 @@ if ($_SESSION['role'] != 'employee') {
 }
 
 $userID = $_SESSION['id'];
+$name = $_SESSION['fullname'];
 
-/* COMPLIANCE COUNTS */
-$totalQuery = mysqli_query(
+/* ================= COMPLIANCE ================= */
+$totalPolicies = mysqli_num_rows(mysqli_query(
     $conn,
     "SELECT * FROM compliance_records WHERE user_id='$userID'"
-);
+));
 
-$totalPolicies = mysqli_num_rows($totalQuery);
-
-$compliantQuery = mysqli_query(
+$compliant = mysqli_num_rows(mysqli_query(
     $conn,
-    "SELECT * FROM compliance_records
-WHERE user_id='$userID'
-AND compliance_status='Compliant'"
-);
+    "SELECT * FROM compliance_records WHERE user_id='$userID' AND compliance_status='Compliant'"
+));
 
-$compliantCount = mysqli_num_rows($compliantQuery);
-
-$pendingQuery = mysqli_query(
+$pending = mysqli_num_rows(mysqli_query(
     $conn,
-    "SELECT * FROM compliance_records
-WHERE user_id='$userID'
-AND compliance_status='Pending'"
-);
+    "SELECT * FROM compliance_records WHERE user_id='$userID' AND compliance_status='Pending'"
+));
 
-$pendingCount = mysqli_num_rows($pendingQuery);
-
-$nonCompliantQuery = mysqli_query(
+$nonCompliant = mysqli_num_rows(mysqli_query(
     $conn,
-    "SELECT * FROM compliance_records
-WHERE user_id='$userID'
-AND compliance_status='Non-Compliant'"
-);
+    "SELECT * FROM compliance_records WHERE user_id='$userID' AND compliance_status='Non-Compliant'"
+));
 
-$nonCompliantCount = mysqli_num_rows($nonCompliantQuery);
+$rate = ($totalPolicies > 0) ? ($compliant / $totalPolicies) * 100 : 0;
 
-$complianceRate = 0;
+/* ================= TASKS ================= */
+$totalTasks = mysqli_num_rows(mysqli_query(
+    $conn,
+    "SELECT * FROM tasks WHERE assigned_to='$userID'"
+));
 
-if ($totalPolicies > 0) {
-    $complianceRate = ($compliantCount / $totalPolicies) * 100;
-}
+$completedTasks = mysqli_num_rows(mysqli_query(
+    $conn,
+    "SELECT * FROM tasks WHERE assigned_to='$userID' AND status='Completed'"
+));
+
+/* ================= INCIDENTS ================= */
+$totalIncidents = mysqli_num_rows(mysqli_query(
+    $conn,
+    "SELECT * FROM incident_reports WHERE user_id='$userID'"
+));
+
+$pendingIncidents = mysqli_num_rows(mysqli_query(
+    $conn,
+    "SELECT * FROM incident_reports WHERE user_id='$userID' AND status='Pending'"
+));
+
+/* ================= VIOLATIONS ================= */
+$violations = mysqli_num_rows(mysqli_query(
+    $conn,
+    "SELECT * FROM violations WHERE user_id='$userID'"
+));
+
 ?>
 
 <!DOCTYPE html>
@@ -67,214 +79,153 @@ if ($totalPolicies > 0) {
 
         <div class="main-content glass">
 
-            <h1>Welcome, <?php echo $_SESSION['fullname']; ?></h1>
+            <h1>Welcome, <?php echo $name; ?></h1>
 
-            <!-- OVERVIEW CARDS -->
+            <!-- CARDS -->
             <div class="cards">
 
                 <div class="card glass">
                     <h3>Compliance Rate</h3>
-                    <p><?php echo round($complianceRate); ?>%</p>
+                    <p><?php echo round($rate); ?>%</p>
                 </div>
 
                 <div class="card glass">
-                    <h3>Completed Policies</h3>
-                    <p><?php echo $compliantCount; ?></p>
+                    <h3>Compliant</h3>
+                    <p><?php echo $compliant; ?></p>
                 </div>
 
                 <div class="card glass">
-                    <h3>Pending Tasks</h3>
-                    <p><?php echo $pendingCount; ?></p>
+                    <h3>Pending</h3>
+                    <p><?php echo $pending; ?></p>
                 </div>
 
                 <div class="card glass">
                     <h3>Violations</h3>
-                    <p><?php echo $nonCompliantCount; ?></p>
+                    <p><?php echo $violations; ?></p>
+                </div>
+
+                <div class="card glass">
+                    <h3>Tasks</h3>
+                    <p><?php echo $totalTasks; ?></p>
+                </div>
+
+                <div class="card glass">
+                    <h3>Incidents</h3>
+                    <p><?php echo $totalIncidents; ?></p>
                 </div>
 
             </div>
 
-            <!-- COMPLIANCE STATUS -->
-            <div class="glass" style="padding:30px; margin-top:30px;">
-
+            <!-- COMPLIANCE -->
+            <div class="glass" style="padding:20px;margin-top:20px;">
                 <h2>Compliance Status</h2>
-                <br>
-
                 <div class="table-container">
-
                     <table>
-
                         <tr>
                             <th>Policy</th>
-                            <th>Description</th>
                             <th>Status</th>
-                            <th>Last Updated</th>
+                            <th>Updated</th>
                         </tr>
 
                         <?php
-
-                        $policyQuery = mysqli_query(
+                        $q = mysqli_query(
                             $conn,
-                            "SELECT compliance_records.*,
-                    policies.policy_name,
-                    policies.description
-
-                    FROM compliance_records
-
-                    INNER JOIN policies
-                    ON compliance_records.policy_id = policies.id
-
-                    WHERE compliance_records.user_id='$userID'"
+                            "SELECT compliance_records.*, policies.policy_name
+FROM compliance_records
+INNER JOIN policies ON compliance_records.policy_id = policies.id
+WHERE compliance_records.user_id='$userID'"
                         );
 
-                        while ($row = mysqli_fetch_assoc($policyQuery)) {
+                        while ($r = mysqli_fetch_assoc($q)) {
                         ?>
-
                             <tr>
-
-                                <td>
-                                    <?php echo $row['policy_name']; ?>
-                                </td>
-
-                                <td>
-                                    <?php echo $row['description']; ?>
-                                </td>
-
-                                <td>
-
-                                    <?php
-
-                                    if ($row['compliance_status'] == "Compliant") {
-                                        echo "<span style='color:lightgreen;'>Compliant</span>";
-                                    } elseif ($row['compliance_status'] == "Pending") {
-                                        echo "<span style='color:yellow;'>Pending</span>";
-                                    } else {
-                                        echo "<span style='color:#ff7b7b;'>Non-Compliant</span>";
-                                    }
-
-                                    ?>
-
-                                </td>
-
-                                <td>
-                                    <?php echo $row['updated_at']; ?>
-                                </td>
-
+                                <td><?php echo $r['policy_name']; ?></td>
+                                <td><?php echo $r['compliance_status']; ?></td>
+                                <td><?php echo $r['updated_at']; ?></td>
                             </tr>
-
                         <?php } ?>
-
                     </table>
-
                 </div>
-
             </div>
 
-            <!-- TASKS SECTION -->
-            <div class="glass" style="padding:30px; margin-top:30px;">
-
-                <h2>Assigned Tasks</h2>
-                <br>
-
+            <!-- TASKS -->
+            <div class="glass" style="padding:20px;margin-top:20px;">
+                <h2>My Tasks</h2>
                 <div class="table-container">
-
                     <table>
-
                         <tr>
-                            <th>Task</th>
+                            <th>Title</th>
                             <th>Priority</th>
-                            <th>Deadline</th>
                             <th>Status</th>
+                            <th>Deadline</th>
                         </tr>
 
-                        <tr>
-                            <td>Review Data Privacy Policy</td>
-                            <td>High</td>
-                            <td>May 15, 2026</td>
-                            <td>
-                                <span style="color:yellow;">
-                                    Pending
-                                </span>
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <td>Update Password</td>
-                            <td>Medium</td>
-                            <td>May 20, 2026</td>
-                            <td>
-                                <span style="color:lightgreen;">
-                                    Completed
-                                </span>
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <td>Complete Security Awareness Training</td>
-                            <td>High</td>
-                            <td>May 25, 2026</td>
-                            <td>
-                                <span style="color:#ff7b7b;">
-                                    Not Started
-                                </span>
-                            </td>
-                        </tr>
-
+                        <?php
+                        $t = mysqli_query($conn, "SELECT * FROM tasks WHERE assigned_to='$userID'");
+                        while ($row = mysqli_fetch_assoc($t)) {
+                        ?>
+                            <tr>
+                                <td><?php echo $row['title']; ?></td>
+                                <td><?php echo $row['priority']; ?></td>
+                                <td><?php echo $row['status']; ?></td>
+                                <td><?php echo $row['deadline']; ?></td>
+                            </tr>
+                        <?php } ?>
                     </table>
-
                 </div>
-
             </div>
 
-            <!-- RECENT ACTIVITY -->
-            <div class="glass" style="padding:30px; margin-top:30px;">
-
-                <h2>Recent Activity Logs</h2>
-                <br>
-
+            <!-- INCIDENTS -->
+            <div class="glass" style="padding:20px;margin-top:20px;">
+                <h2>My Incident Reports</h2>
                 <div class="table-container">
-
                     <table>
-
                         <tr>
-                            <th>Activity</th>
+                            <th>Title</th>
+                            <th>Severity</th>
+                            <th>Status</th>
                             <th>Date</th>
                         </tr>
 
                         <?php
-
-                        $logsQuery = mysqli_query(
-                            $conn,
-                            "SELECT * FROM activity_logs
-                    WHERE user_id='$userID'
-                    ORDER BY log_time DESC"
-                        );
-
-                        while ($log = mysqli_fetch_assoc($logsQuery)) {
+                        $i = mysqli_query($conn, "SELECT * FROM incident_reports WHERE user_id='$userID' ORDER BY id DESC");
+                        while ($r = mysqli_fetch_assoc($i)) {
                         ?>
-
                             <tr>
-
-                                <td>
-                                    <?php echo $log['action']; ?>
-                                </td>
-
-                                <td>
-                                    <?php echo $log['log_time']; ?>
-                                </td>
-
+                                <td><?php echo $r['title']; ?></td>
+                                <td><?php echo $r['severity']; ?></td>
+                                <td><?php echo $r['status']; ?></td>
+                                <td><?php echo $r['date_reported']; ?></td>
                             </tr>
-
                         <?php } ?>
-
                     </table>
-
                 </div>
+            </div>
 
+            <!-- LOGS -->
+            <div class="glass" style="padding:20px;margin-top:20px;">
+                <h2>Activity Logs</h2>
+                <div class="table-container">
+                    <table>
+                        <tr>
+                            <th>Action</th>
+                            <th>Date</th>
+                        </tr>
+
+                        <?php
+                        $l = mysqli_query($conn, "SELECT * FROM activity_logs WHERE user_id='$userID' ORDER BY log_time DESC");
+                        while ($log = mysqli_fetch_assoc($l)) {
+                        ?>
+                            <tr>
+                                <td><?php echo $log['action']; ?></td>
+                                <td><?php echo $log['log_time']; ?></td>
+                            </tr>
+                        <?php } ?>
+                    </table>
+                </div>
             </div>
 
         </div>
-
     </div>
 
 </body>

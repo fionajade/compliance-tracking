@@ -2,19 +2,20 @@
 session_start();
 include(__DIR__ . '/../config/connect.php');
 
-if ($_SESSION['role'] != 'employee') {
-    header("Location: index.php");
+if (!isset($_SESSION['role']) || $_SESSION['role'] != 'employee') {
+    header("Location: ../index.php");
     exit();
 }
 
 $userID = $_SESSION['id'];
+$name = $_SESSION['fullname'];
 ?>
 
 <!DOCTYPE html>
 <html>
 
 <head>
-    <title>Compliance Status</title>
+    <title>My Compliance</title>
     <link rel="stylesheet" href="../css/style.css">
 </head>
 
@@ -26,64 +27,44 @@ $userID = $_SESSION['id'];
 
         <div class="main-content glass">
 
-            <h1>Compliance Status</h1>
+            <h1>My Compliance Records</h1>
 
-            <div class="table-container">
+            <div class="glass" style="padding:20px;margin-top:20px;">
 
-                <table>
+                <div class="table-container">
 
-                    <tr>
-                        <th>Policy</th>
-                        <th>Description</th>
-                        <th>Status</th>
-                        <th>Last Updated</th>
-                    </tr>
-
-                    <?php
-                    $query = mysqli_query(
-                        $conn,
-                        "SELECT compliance_records.*,
-policies.policy_name,
-policies.description
-
-FROM compliance_records
-
-INNER JOIN policies
-ON compliance_records.policy_id = policies.id
-
-WHERE compliance_records.user_id='$userID'"
-                    );
-
-                    while ($row = mysqli_fetch_assoc($query)) {
-                    ?>
-
+                    <table>
                         <tr>
-
-                            <td><?php echo $row['policy_name']; ?></td>
-
-                            <td><?php echo $row['description']; ?></td>
-
-                            <td>
-
-                                <?php
-                                if ($row['compliance_status'] == 'Compliant') {
-                                    echo "<span style='color:lightgreen;'>Compliant</span>";
-                                } elseif ($row['compliance_status'] == 'Pending') {
-                                    echo "<span style='color:yellow;'>Pending</span>";
-                                } else {
-                                    echo "<span style='color:#ff7b7b;'>Non-Compliant</span>";
-                                }
-                                ?>
-
-                            </td>
-
-                            <td><?php echo $row['updated_at']; ?></td>
-
+                            <th>Policy</th>
+                            <th>Description</th>
+                            <th>Status</th>
+                            <th>Last Updated</th>
                         </tr>
 
-                    <?php } ?>
+                        <?php
+                        $query = mysqli_query($conn, "
+                    SELECT compliance_records.*, policies.policy_name, policies.description
+                    FROM compliance_records
+                    INNER JOIN policies
+                    ON compliance_records.policy_id = policies.id
+                    WHERE compliance_records.user_id='$userID'
+                ");
 
-                </table>
+                        while ($row = mysqli_fetch_assoc($query)) {
+                        ?>
+
+                            <tr>
+                                <td><?php echo $row['policy_name']; ?></td>
+                                <td><?php echo $row['description']; ?></td>
+                                <td><?php echo $row['compliance_status']; ?></td>
+                                <td><?php echo $row['updated_at']; ?></td>
+                            </tr>
+
+                        <?php } ?>
+
+                    </table>
+
+                </div>
 
             </div>
 
