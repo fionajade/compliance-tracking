@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 11, 2026 at 06:17 AM
+-- Generation Time: May 11, 2026 at 09:19 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -43,7 +43,9 @@ INSERT INTO `activity_logs` (`id`, `user_id`, `action`, `task_id`, `log_time`) V
 (1, 3, 'Created a task', 1, '2026-05-10 20:00:49'),
 (2, 3, 'Updated task status to Not Started', 1, '2026-05-10 20:07:18'),
 (3, 3, 'Updated task status to ', 0, '2026-05-10 20:59:47'),
-(4, 3, 'Updated task status to In Progress (Task ID: 1)', 1, '2026-05-10 21:09:42');
+(4, 3, 'Updated task status to In Progress (Task ID: 1)', 1, '2026-05-10 21:09:42'),
+(5, 3, 'Submitted incident report', NULL, '2026-05-11 18:08:55'),
+(6, 3, 'Submitted incident report', NULL, '2026-05-11 18:09:43');
 
 -- --------------------------------------------------------
 
@@ -67,6 +69,44 @@ INSERT INTO `compliance_records` (`id`, `user_id`, `policy_id`, `compliance_stat
 (1, 3, 1, 'Compliant', '2026-05-10 18:32:37'),
 (2, 3, 2, 'Pending', '2026-05-10 18:32:37'),
 (3, 3, 3, 'Non-Compliant', '2026-05-10 18:32:37');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `employee_compliance`
+--
+
+CREATE TABLE `employee_compliance` (
+  `id` int(11) NOT NULL,
+  `employee_id` int(11) DEFAULT NULL,
+  `task_id` int(11) DEFAULT NULL,
+  `status` varchar(50) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `incident_reports`
+--
+
+CREATE TABLE `incident_reports` (
+  `id` int(11) NOT NULL,
+  `user_id` int(11) DEFAULT NULL,
+  `title` varchar(255) DEFAULT NULL,
+  `description` text DEFAULT NULL,
+  `severity` varchar(50) DEFAULT NULL,
+  `status` varchar(50) DEFAULT NULL,
+  `proof_image` varchar(255) DEFAULT NULL,
+  `date_reported` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `incident_reports`
+--
+
+INSERT INTO `incident_reports` (`id`, `user_id`, `title`, `description`, `severity`, `status`, `proof_image`, `date_reported`) VALUES
+(1, 3, '', '', '', 'Pending', '', '2026-05-11 18:08:55'),
+(2, 3, '', '', '', 'Pending', '', '2026-05-11 18:09:43');
 
 -- --------------------------------------------------------
 
@@ -181,6 +221,18 @@ ALTER TABLE `compliance_records`
   ADD KEY `policy_id` (`policy_id`);
 
 --
+-- Indexes for table `employee_compliance`
+--
+ALTER TABLE `employee_compliance`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `incident_reports`
+--
+ALTER TABLE `incident_reports`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indexes for table `policies`
 --
 ALTER TABLE `policies`
@@ -213,13 +265,25 @@ ALTER TABLE `violations`
 -- AUTO_INCREMENT for table `activity_logs`
 --
 ALTER TABLE `activity_logs`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `compliance_records`
 --
 ALTER TABLE `compliance_records`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
+-- AUTO_INCREMENT for table `employee_compliance`
+--
+ALTER TABLE `employee_compliance`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `incident_reports`
+--
+ALTER TABLE `incident_reports`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `policies`
