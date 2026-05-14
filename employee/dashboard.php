@@ -66,7 +66,9 @@ $violations = mysqli_num_rows(mysqli_query(
 <!DOCTYPE html>
 <html>
 
-<?php include("__DIR__ . '/../includes/header.php"); ?>
+<?php include('../includes/header.php'); ?>
+
+
 
 
 <body>

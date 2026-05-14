@@ -11,16 +11,19 @@ $userID = $_SESSION['id'];
 $name = $_SESSION['username'];
 ?>
 
+
 <!DOCTYPE html>
 <html>
 
-<?php include("__DIR__ . '/../includes/header.php"); ?>
+<?php include('../includes/header.php'); ?>
+
 
 <body>
 
     <div class="container dashboard">
 
-        <?php include(__DIR__ . '/../includes/employee-sidebar.php'); ?>
+        <?php include('sidebar.php'); ?>
+
 
         <div class="main-content glass">
 

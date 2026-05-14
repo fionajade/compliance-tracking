@@ -84,7 +84,12 @@ if (isset($_POST['save_task']) && $editMode) {
 }
 ?>
 
-<?php include("__DIR__ . '/../includes/header.php"); ?>
+
+<!DOCTYPE html>
+<html>
+
+<?php include('../includes/header.php'); ?>
+
 
 <body>
 

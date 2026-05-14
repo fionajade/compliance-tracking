@@ -28,7 +28,12 @@ if ($userData['is_locked'] == 1) {
 $result = mysqli_query($conn, "SELECT * FROM tasks ORDER BY created_at DESC");
 ?>
 
-<?php include("__DIR__ . '/../includes/header.php"); ?>
+
+<!DOCTYPE html>
+<html>
+
+<?php include('../includes/header.php'); ?>
+
 <body>
 
 <div class="container dashboard">

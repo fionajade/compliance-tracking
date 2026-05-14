@@ -38,13 +38,18 @@ if (isset($_POST['update_account'])) {
 }
 ?>
 
-<?php include("__DIR__ . '/../includes/header.php"); ?>
+
+<!DOCTYPE html>
+<html>
+
+<?php include('../includes/header.php'); ?>
+
 
 <body>
 
     <div class="container dashboard">
 
-        <?php include(__DIR__ . '/../includes/employee-sidebar.php'); ?>
+        <?php include('sidebar.php'); ?>
 
         <div class="main-content glass">
 

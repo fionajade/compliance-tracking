@@ -16,7 +16,12 @@ ORDER BY log_time DESC
 ");
 ?>
 
-<?php include("__DIR__ . '/../includes/header.php"); ?>
+
+<!DOCTYPE html>
+<html>
+
+<?php include('../includes/header.php'); ?>
+
 
 <body>
 
