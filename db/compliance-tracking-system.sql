@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 11, 2026 at 09:19 PM
+-- Generation Time: May 14, 2026 at 06:35 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -45,7 +45,17 @@ INSERT INTO `activity_logs` (`id`, `user_id`, `action`, `task_id`, `log_time`) V
 (3, 3, 'Updated task status to ', 0, '2026-05-10 20:59:47'),
 (4, 3, 'Updated task status to In Progress (Task ID: 1)', 1, '2026-05-10 21:09:42'),
 (5, 3, 'Submitted incident report', NULL, '2026-05-11 18:08:55'),
-(6, 3, 'Submitted incident report', NULL, '2026-05-11 18:09:43');
+(6, 3, 'Submitted incident report', NULL, '2026-05-11 18:09:43'),
+(7, 3, 'SUCCESS LOGIN from IP: ::1', NULL, '2026-05-13 12:43:57'),
+(8, 2, 'SUCCESS LOGIN from IP: ::1', NULL, '2026-05-13 12:44:12'),
+(9, 1, 'SUCCESS LOGIN from IP: ::1', NULL, '2026-05-13 12:44:54'),
+(10, 3, 'FAILED LOGIN (1/3) from IP: ::1', NULL, '2026-05-13 12:53:56'),
+(11, 3, 'FAILED LOGIN (2/3) from IP: ::1', NULL, '2026-05-13 12:54:07'),
+(12, 3, 'FAILED LOGIN (3/3) from IP: ::1', NULL, '2026-05-13 12:56:06'),
+(13, 3, 'ACCOUNT LOCKED + EMAIL SENT', NULL, '2026-05-13 12:56:08'),
+(14, 1, 'FAILED LOGIN (1/3) from IP: ::1', NULL, '2026-05-13 13:02:06'),
+(15, 1, 'FAILED LOGIN (2/3) from IP: ::1', NULL, '2026-05-13 13:02:36'),
+(16, 1, 'FAILED LOGIN (3/3) from IP: ::1', NULL, '2026-05-13 13:04:47');
 
 -- --------------------------------------------------------
 
@@ -133,6 +143,21 @@ INSERT INTO `policies` (`id`, `policy_name`, `description`, `status`) VALUES
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `security_events`
+--
+
+CREATE TABLE `security_events` (
+  `id` int(11) NOT NULL,
+  `user_id` int(11) DEFAULT NULL,
+  `event_type` varchar(100) DEFAULT NULL,
+  `message` text DEFAULT NULL,
+  `ip_address` varchar(50) DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `tasks`
 --
 
@@ -162,22 +187,27 @@ INSERT INTO `tasks` (`id`, `title`, `priority`, `deadline`, `status`, `departmen
 
 CREATE TABLE `users` (
   `id` int(11) NOT NULL,
-  `fullname` varchar(100) DEFAULT NULL,
+  `employee_id` varchar(20) DEFAULT NULL,
+  `username` varchar(150) DEFAULT NULL,
   `email` varchar(100) DEFAULT NULL,
   `password` varchar(255) DEFAULT NULL,
   `role` enum('admin','security','employee') NOT NULL,
+  `department` varchar(50) DEFAULT NULL,
   `violation_count` int(11) DEFAULT 0,
-  `is_locked` tinyint(1) DEFAULT 0
+  `is_locked` tinyint(1) DEFAULT 0,
+  `login_attempts` int(11) DEFAULT 0,
+  `last_login_ip` varchar(50) DEFAULT NULL,
+  `last_login_at` datetime DEFAULT NULL,
+  `must_change_password` tinyint(1) DEFAULT 1
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `users`
 --
 
-INSERT INTO `users` (`id`, `fullname`, `email`, `password`, `role`, `violation_count`, `is_locked`) VALUES
-(1, 'Admin User', 'admin@gmail.com', '0192023a7bbd73250516f069df18b500', 'admin', 0, 0),
-(2, 'Security Officer', 'security@gmail.com', '83af648e6d9712795f2cb32ad6c77592', 'security', 0, 0),
-(3, 'jade', 'employee@gmail.com', '033836b6cedd9a857d82681aafadbc19', 'employee', 0, 0);
+INSERT INTO `users` (`id`, `employee_id`, `username`, `email`, `password`, `role`, `department`, `violation_count`, `is_locked`, `login_attempts`, `last_login_ip`, `last_login_at`, `must_change_password`) VALUES
+(3, NULL, 'jade', 'employee@gmail.com', 'employee123\r\n', 'employee', NULL, 0, 0, 0, NULL, NULL, 1),
+(5, NULL, 'admin', 'admin@gmail.com', 'admin123', 'admin', NULL, 0, 0, 0, NULL, NULL, 1);
 
 -- --------------------------------------------------------
 
@@ -188,6 +218,7 @@ INSERT INTO `users` (`id`, `fullname`, `email`, `password`, `role`, `violation_c
 CREATE TABLE `violations` (
   `id` int(11) NOT NULL,
   `user_id` int(11) DEFAULT NULL,
+  `employee_id` varchar(20) DEFAULT NULL,
   `violation_type` varchar(255) DEFAULT NULL,
   `severity` enum('Low','Medium','High') DEFAULT NULL,
   `status` enum('Open','Resolved') DEFAULT 'Open',
@@ -198,9 +229,9 @@ CREATE TABLE `violations` (
 -- Dumping data for table `violations`
 --
 
-INSERT INTO `violations` (`id`, `user_id`, `violation_type`, `severity`, `status`, `created_at`) VALUES
-(1, 3, 'Unauthorized File Access', 'High', 'Open', '2026-05-10 18:32:37'),
-(2, 3, 'Password Expired', 'Medium', 'Resolved', '2026-05-10 18:32:37');
+INSERT INTO `violations` (`id`, `user_id`, `employee_id`, `violation_type`, `severity`, `status`, `created_at`) VALUES
+(1, 3, NULL, 'Unauthorized File Access', 'High', 'Open', '2026-05-10 18:32:37'),
+(2, 3, NULL, 'Password Expired', 'Medium', 'Resolved', '2026-05-10 18:32:37');
 
 --
 -- Indexes for dumped tables
@@ -239,6 +270,12 @@ ALTER TABLE `policies`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Indexes for table `security_events`
+--
+ALTER TABLE `security_events`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indexes for table `tasks`
 --
 ALTER TABLE `tasks`
@@ -248,7 +285,8 @@ ALTER TABLE `tasks`
 -- Indexes for table `users`
 --
 ALTER TABLE `users`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `employee_id` (`employee_id`);
 
 --
 -- Indexes for table `violations`
@@ -265,7 +303,7 @@ ALTER TABLE `violations`
 -- AUTO_INCREMENT for table `activity_logs`
 --
 ALTER TABLE `activity_logs`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
 -- AUTO_INCREMENT for table `compliance_records`
@@ -292,6 +330,12 @@ ALTER TABLE `policies`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
+-- AUTO_INCREMENT for table `security_events`
+--
+ALTER TABLE `security_events`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT for table `tasks`
 --
 ALTER TABLE `tasks`
@@ -301,7 +345,7 @@ ALTER TABLE `tasks`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `violations`
