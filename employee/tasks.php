@@ -3,201 +3,118 @@ session_start();
 include(__DIR__ . '/../config/connect.php');
 
 if ($_SESSION['role'] != 'employee') {
-    header("Location: index.php");
-    exit();
+    exit("Access Denied");
 }
 
 $user_id = $_SESSION['id'];
 
-/* =========================
-   CHECK IF USER IS LOCKED
-========================= */
-$lockCheck = mysqli_query($conn, "SELECT is_locked, violation_count FROM users WHERE id='$user_id'");
-$userData = mysqli_fetch_assoc($lockCheck);
+/* UPDATE TASK STATUS */
+if (isset($_POST['update_task'])) {
 
-if ($userData['is_locked'] == 1) {
-    echo "<h2 style='color:red;text-align:center;margin-top:50px;'>
-            🔒 Your account has been locked due to multiple violations.
-          </h2>";
-    exit();
+    $task_id = $_POST['task_id'];
+    $status = $_POST['status'];
+
+    mysqli_query($conn, "
+        UPDATE tasks
+        SET status='$status'
+        WHERE id='$task_id' AND assigned_to='$user_id'
+    ");
+
+    mysqli_query($conn, "
+        INSERT INTO activity_logs (user_id, action, task_id)
+        VALUES ('$user_id', 'Updated task status to $status', '$task_id')
+    ");
 }
 
-/* =========================
-   GET TASKS
-========================= */
-$result = mysqli_query($conn, "SELECT * FROM tasks ORDER BY created_at DESC");
+/* GET ASSIGNED TASKS */
+$tasks = mysqli_query($conn, "
+    SELECT *
+    FROM tasks
+    WHERE assigned_to='$user_id'
+    ORDER BY created_at DESC
+");
 ?>
-
 
 <!DOCTYPE html>
 <html>
-
 <?php include('../includes/header.php'); ?>
 
 <body>
 
 <div class="container dashboard">
 
-    <?php include(__DIR__ . '/../includes/employee-sidebar.php'); ?>
+    <?php include('sidebar.php'); ?>
 
     <div class="main-content glass">
 
-        <h1>📌 Task Board</h1>
+        <h1>📋 My Tasks</h1>
+        <p style="opacity:0.7;">Receive assigned tasks and update progress</p>
 
-        <a href="add-task.php" class="btn">+ Add Task</a>
+        <!-- TASK LIST -->
+        <div class="glass" style="padding:20px;margin-top:20px;">
 
-        <div class="kanban">
+            <div class="table-container">
 
-        <!-- ================= NOT STARTED ================= -->
-        <div class="kanban-column glass">
-            <h2>🟡 Not Started</h2>
+                <table border="1" width="100%" cellpadding="8">
 
-            <?php
-            mysqli_data_seek($result, 0);
-            $depts = [];
+                    <tr>
+                        <th>Task</th>
+                        <th>Priority</th>
+                        <th>Deadline</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
 
-            while ($row = mysqli_fetch_assoc($result)) {
-                if ($row['status'] == "Not Started") {
-                    $depts[$row['department']][] = $row;
-                }
-            }
+                    <?php while ($t = mysqli_fetch_assoc($tasks)) { ?>
 
-            foreach ($depts as $deptName => $tasks) {
-            ?>
+                        <tr>
 
-            <h3 style="margin-top:15px; font-size:14px; opacity:0.8;">
-                📁 <?= $deptName ?>
-            </h3>
+                            <td><?= $t['title'] ?></td>
 
-            <?php foreach ($tasks as $row) { ?>
+                            <td>
+                                <?php
+                                if ($t['priority'] == 'High') echo "🔴 High";
+                                elseif ($t['priority'] == 'Medium') echo "🟡 Medium";
+                                else echo "🟢 Low";
+                                ?>
+                            </td>
 
-            <div class="task-card">
+                            <td><?= $t['deadline'] ?></td>
 
-                <h3><?= $row['title'] ?></h3>
-                <p>Priority: <?= $row['priority'] ?></p>
-                <p>Dept: <?= $row['department'] ?></p>
-                <p>Due: <?= $row['deadline'] ?></p>
+                            <td><?= $t['status'] ?></td>
 
-                <div style="display:flex; gap:5px; flex-wrap:wrap;">
+                            <td>
 
-                    <form method="POST" action="update-task.php">
-                        <input type="hidden" name="task_id" value="<?= $row['id'] ?>">
-                        <input type="hidden" name="status" value="In Progress">
-                        <button class="btn small">Start</button>
-                    </form>
+                                <form method="POST">
 
-                    <a class="btn small" href="add-task.php?id=<?= $row['id'] ?>">
-                        Edit
-                    </a>
+                                    <input type="hidden" name="task_id" value="<?= $t['id'] ?>">
 
-                </div>
+                                    <select name="status">
+                                        <option>Not Started</option>
+                                        <option>In Progress</option>
+                                        <option>Completed</option>
+                                    </select>
 
-            </div>
+                                    <button type="submit" name="update_task">
+                                        Update
+                                    </button>
 
-            <?php } ?>
+                                </form>
 
-            <?php } ?>
+                            </td>
 
-        </div>
+                        </tr>
 
-        <!-- ================= IN PROGRESS ================= -->
-        <div class="kanban-column glass">
-            <h2>🔵 In Progress</h2>
+                    <?php } ?>
 
-            <?php
-            mysqli_data_seek($result, 0);
-            $depts = [];
-
-            while ($row = mysqli_fetch_assoc($result)) {
-                if ($row['status'] == "In Progress") {
-                    $depts[$row['department']][] = $row;
-                }
-            }
-
-            foreach ($depts as $deptName => $tasks) {
-            ?>
-
-            <h3 style="margin-top:15px; font-size:14px; opacity:0.8;">
-                📁 <?= $deptName ?>
-            </h3>
-
-            <?php foreach ($tasks as $row) { ?>
-
-            <div class="task-card">
-
-                <h3><?= $row['title'] ?></h3>
-                <p>Priority: <?= $row['priority'] ?></p>
-                <p>Dept: <?= $row['department'] ?></p>
-                <p>Due: <?= $row['deadline'] ?></p>
-
-                <div style="display:flex; gap:5px; flex-wrap:wrap;">
-
-                    <form method="POST" action="update-task.php">
-                        <input type="hidden" name="task_id" value="<?= $row['id'] ?>">
-                        <button class="btn small" name="status" value="Completed">
-                            Done
-                        </button>
-                    </form>
-
-                    <a class="btn small" href="add-task.php?id=<?= $row['id'] ?>">
-                        Edit
-                    </a>
-
-                </div>
+                </table>
 
             </div>
-
-            <?php } ?>
-
-            <?php } ?>
-
-        </div>
-
-        <!-- ================= COMPLETED ================= -->
-        <div class="kanban-column glass">
-            <h2>🟢 Completed</h2>
-
-            <?php
-            mysqli_data_seek($result, 0);
-            $depts = [];
-
-            while ($row = mysqli_fetch_assoc($result)) {
-                if ($row['status'] == "Completed") {
-                    $depts[$row['department']][] = $row;
-                }
-            }
-
-            foreach ($depts as $deptName => $tasks) {
-            ?>
-
-            <h3 style="margin-top:15px; font-size:14px; opacity:0.8;">
-                📁 <?= $deptName ?>
-            </h3>
-
-            <?php foreach ($tasks as $row) { ?>
-
-            <div class="task-card done">
-
-                <h3><?= $row['title'] ?></h3>
-                <p>Priority: <?= $row['priority'] ?></p>
-                <p>Dept: <?= $row['department'] ?></p>
-                <p>Due: <?= $row['deadline'] ?></p>
-
-                <a class="btn small" href="add-task.php?id=<?= $row['id'] ?>">
-                    Edit
-                </a>
-
-            </div>
-
-            <?php } ?>
-
-            <?php } ?>
-
-        </div>
 
         </div>
 
     </div>
+
 </div>
 
 </body>

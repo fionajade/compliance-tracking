@@ -14,87 +14,110 @@ $user = mysqli_fetch_assoc($query);
 
 if (isset($_POST['update_account'])) {
 
-    $username = $_POST['username'];
+    $email = $_POST['email'];
+    $contact_number = $_POST['contact_number'];
     $password = $_POST['password'];
 
     if (!empty($password)) {
         $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
 
-        mysqli_query($conn, "
+        $sql = "
             UPDATE users
-            SET username='$username', password='$hashedPassword'
+            SET email='$email',
+                contact_number='$contact_number',
+                password='$hashedPassword'
             WHERE id='$user_id'
-        ");
+        ";
     } else {
-        mysqli_query($conn, "
+        $sql = "
             UPDATE users
-            SET username='$username'
+            SET email='$email',
+                contact_number='$contact_number'
             WHERE id='$user_id'
-        ");
+        ";
     }
+
+    mysqli_query($conn, $sql);
 
     header("Location: edit_account.php?success=1");
     exit();
 }
 ?>
 
-
 <!DOCTYPE html>
 <html>
 
 <?php include('../includes/header.php'); ?>
 
-
 <body>
 
-    <div class="container dashboard">
+<div class="container dashboard">
 
-        <?php include('sidebar.php'); ?>
+    <?php include('sidebar.php'); ?>
 
-        <div class="main-content glass">
+    <div class="main-content glass">
 
-            <h1>👤 My Profile</h1>
+        <h1>👤 My Profile</h1>
 
-            <p style="opacity:0.7; margin-bottom:20px;">
-                Manage your account information and security settings.
-            </p>
+        <p style="opacity:0.7; margin-bottom:20px;">
+            Manage your account information and security settings.
+        </p>
 
-            <?php if (isset($_GET['success'])) { ?>
-                <div class="success-box">
-                    ✔ Account updated successfully!
-                </div>
-            <?php } ?>
+        <?php if (isset($_GET['success'])) { ?>
+            <div class="success-box">
+                ✔ Account updated successfully!
+            </div>
+        <?php } ?>
 
-            <!-- PROFILE CARD -->
-            <div class="profile-card glass">
+        <!-- PROFILE CARD -->
+        <div class="profile-card glass">
 
-                <div class="avatar">
-                    👤
-                </div>
-
-                <form method="POST">
-
-                    <div class="input-group">
-                        <label>Fullname</label>
-                        <input type="text" name="username" value="<?= $user['username'] ?>" required>
-                    </div>
-
-                    <div class="input-group">
-                        <label>New Password</label>
-                        <input type="password" name="password" placeholder="Enter new password">
-                    </div>
-
-                    <button class="btn full" type="submit" name="update_account">
-                        Save Changes
-                    </button>
-
-                </form>
-
+            <div class="avatar">
+                👤
             </div>
 
+            <form method="POST">
+
+                <!-- EMPLOYEE ID (READ ONLY) -->
+                <div class="input-group">
+                    <label>Employee ID</label>
+                    <input type="text" value="<?= $user['employee_id'] ?>" readonly>
+                </div>
+
+                <!-- FULL NAME (READ ONLY) -->
+                <div class="input-group">
+                    <label>Full Name</label>
+                    <input type="text" value="<?= $user['username'] ?>" readonly>
+                </div>
+
+                <!-- EMAIL -->
+                <div class="input-group">
+                    <label>Email</label>
+                    <input type="email" name="email" value="<?= $user['email'] ?>" required>
+                </div>
+
+                <!-- CONTACT NUMBER -->
+                <div class="input-group">
+                    <label>Contact Number</label>
+                    <input type="text" name="contact_number" value="<?= $user['contact_number'] ?>" required>
+                </div>
+
+                <!-- PASSWORD -->
+                <div class="input-group">
+                    <label>New Password</label>
+                    <input type="password" name="password" placeholder="Enter new password">
+                </div>
+
+                <button class="btn full" type="submit" name="update_account">
+                    Save Changes
+                </button>
+
+            </form>
+
         </div>
+
     </div>
+</div>
 
 </body>
-
 </html>

@@ -6,9 +6,9 @@
         <li><a href="__DIR__ . '/../dashboard.php">Dashboard</a></li>
 
 
-        <!-- <li><a href="__DIR__ . '/../activity-logs.php">Activity Logs</a></li>
+        <li><a href="__DIR__ . '/../activity-logs.php">Activity Logs</a></li>
 
-        <li><a href="__DIR__ . '/../tasks.php">Tasks</a></li> -->
+        <li><a href="__DIR__ . '/../tasks.php">Tasks</a></li>
 
         <li><a href="__DIR__ . '/../submit-report.php">Submit Report</a></li>
 
