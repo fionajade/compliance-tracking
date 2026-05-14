@@ -28,15 +28,7 @@ if ($userData['is_locked'] == 1) {
 $result = mysqli_query($conn, "SELECT * FROM tasks ORDER BY created_at DESC");
 ?>
 
-<!DOCTYPE html>
-<html>
-
-<head>
-    <title>Tasks Kanban</title>
-    <link rel="stylesheet" href="../css/style.css">
-    <link rel="stylesheet" href="../css/task-style.css">
-</head>
-
+<?php include("__DIR__ . '/../includes/header.php"); ?>
 <body>
 
 <div class="container dashboard">

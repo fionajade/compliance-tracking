@@ -8,16 +8,13 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] != 'employee') {
 }
 
 $userID = $_SESSION['id'];
-$name = $_SESSION['fullname'];
+$name = $_SESSION['username'];
 ?>
 
 <!DOCTYPE html>
 <html>
 
-<head>
-    <title>My Compliance</title>
-    <link rel="stylesheet" href="../css/style.css">
-</head>
+<?php include("__DIR__ . '/../includes/header.php"); ?>
 
 <body>
 

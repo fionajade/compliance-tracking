@@ -8,7 +8,7 @@ if ($_SESSION['role'] != 'employee') {
 }
 
 $userID = $_SESSION['id'];
-$name = $_SESSION['fullname'];
+$name = $_SESSION['username'];
 
 /* ================= COMPLIANCE ================= */
 $totalPolicies = mysqli_num_rows(mysqli_query(
@@ -66,16 +66,14 @@ $violations = mysqli_num_rows(mysqli_query(
 <!DOCTYPE html>
 <html>
 
-<head>
-    <title>Employee Dashboard</title>
-    <link rel="stylesheet" href="../css/style.css">
-</head>
+<?php include("__DIR__ . '/../includes/header.php"); ?>
+
 
 <body>
 
     <div class="container dashboard">
 
-        <?php include(__DIR__ . '/../includes/employee-sidebar.php'); ?>
+        <?php include('sidebar.php'); ?>
 
         <div class="main-content glass">
 

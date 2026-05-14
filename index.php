@@ -6,94 +6,93 @@ $error = "";
 
 if (isset($_POST['btnLogin'])) {
 
-    $email = str_replace("'", "", $_POST['email']);
-    $password = md5($_POST['password']);
+    // FIX: use identifier instead of email
+    $identifier = mysqli_real_escape_string($conn, $_POST['identifier']);
+    $password = $_POST['password'];
 
     $loginQuery = "
         SELECT * FROM users
-        WHERE email = '$email'
-        AND password = '$password'
+        WHERE email = '$identifier'
+        OR username = '$identifier'
+        OR employee_id = '$identifier'
+        LIMIT 1
     ";
 
     $loginResult = mysqli_query($conn, $loginQuery);
 
-    if (mysqli_num_rows($loginResult) > 0) {
+    if ($loginResult && mysqli_num_rows($loginResult) > 0) {
 
-        while ($user = mysqli_fetch_assoc($loginResult)) {
+        $user = mysqli_fetch_assoc($loginResult);
+
+        // FIX: handle plain text password in DB (no hash mismatch issues)
+        if ($user['password'] === $password) {
 
             $_SESSION['id'] = $user['id'];
-            $_SESSION['fullname'] = $user['fullname'];
+            $_SESSION['username'] = $user['username']; // your DB uses "username"
             $_SESSION['email'] = $user['email'];
             $_SESSION['role'] = $user['role'];
 
             if ($user['role'] == "admin") {
-
                 header("Location: __DIR__ . '/../admin/dashboard.php");
                 exit();
-
             } elseif ($user['role'] == "security") {
-
                 header("Location: __DIR__ . '/../security/dashboard.php");
                 exit();
-
             } elseif ($user['role'] == "employee") {
-
                 header("Location: __DIR__ . '/../employee/dashboard.php");
                 exit();
-
-            } else {
-
-                $error = "Invalid role";
-
             }
+        } else {
+            $error = "Invalid password";
         }
-
-
     } else {
-
-        $error = "Invalid email or password";
-
+        $error = "User not found";
     }
 }
 ?>
 
 <!DOCTYPE html>
 <html>
-<head>
-    <title>Login</title>
-    <link rel="stylesheet" href="css/style.css">
-</head>
+
+<?php include('includes/header.php'); ?>
+
+
 <body>
 
-<div class="login-card glass">
+    <div class="login-card glass">
 
-    <h1>Compliance System</h1>
+        <h1>Compliance System</h1>
 
-    <?php
-    if ($error != "") {
-        echo "<p style='color:#ffb3b3; text-align:center; margin-bottom:15px;'>$error</p>";
-    }
-    ?>
+        <p style="text-align:center; font-size:13px; color:#ccc;">
+            Use your company-issued credentials to log in
+        </p>
 
-    <form method="POST">
+        <?php if (!empty($error)): ?>
+            <p style="color:#ffb3b3;text-align:center;margin-bottom:15px;">
+                <?= $error ?>
+            </p>
+        <?php endif; ?>
 
-        <div class="input-group">
-            <label>Email</label>
-            <input type="email" name="email" required>
-        </div>
+        <form method="POST">
 
-        <div class="input-group">
-            <label>Password</label>
-            <input type="password" name="password" required>
-        </div>
+            <div class="input-group">
+                <label>Email or Username</label>
+                <input type="text" name="identifier" required>
+            </div>
 
-        <button class="btn" type="submit" name="btnLogin">
-            Login
-        </button>
+            <div class="input-group">
+                <label>Password (temporary or assigned)</label>
+                <input type="password" name="password" required>
+            </div>
 
-    </form>
+            <button class="btn" type="submit" name="btnLogin">
+                Login
+            </button>
 
-</div>
+        </form>
+
+    </div>
 
 </body>
+
 </html>

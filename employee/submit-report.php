@@ -76,14 +76,7 @@ if (isset($_POST['incident-reports'])) {
 }
 ?>
 
-<!DOCTYPE html>
-<html>
-
-<head>
-    <title>Submit Report</title>
-
-    <link rel="stylesheet" href="../css/style.css">
-    <link rel="stylesheet" href="../css/submit-report.css">
+<?php include("__DIR__ . '/../includes/header.php"); ?>ink rel="stylesheet" href="../css/submit-report.css">
 </head>
 
 <body>

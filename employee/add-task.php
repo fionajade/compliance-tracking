@@ -84,13 +84,7 @@ if (isset($_POST['save_task']) && $editMode) {
 }
 ?>
 
-<!DOCTYPE html>
-<html>
-
-<head>
-    <title><?= $editMode ? "Edit Task" : "Add Task" ?></title>
-    <link rel="stylesheet" href="../css/style.css">
-</head>
+<?php include("__DIR__ . '/../includes/header.php"); ?>
 
 <body>
 

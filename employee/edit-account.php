@@ -38,14 +38,7 @@ if (isset($_POST['update_account'])) {
 }
 ?>
 
-<!DOCTYPE html>
-<html>
-
-<head>
-    <title>Edit Account</title>
-    <link rel="stylesheet" href="../css/style.css">
-    <link rel="stylesheet" href="../css/edit-account.css">
-</head>
+<?php include("__DIR__ . '/../includes/header.php"); ?>
 
 <body>
 
@@ -78,7 +71,7 @@ if (isset($_POST['update_account'])) {
 
                     <div class="input-group">
                         <label>Fullname</label>
-                        <input type="text" name="fullname" value="<?= $user['fullname'] ?>" required>
+                        <input type="text" name="username" value="<?= $user['username'] ?>" required>
                     </div>
 
                     <div class="input-group">

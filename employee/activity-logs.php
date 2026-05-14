@@ -16,14 +16,7 @@ ORDER BY log_time DESC
 ");
 ?>
 
-<!DOCTYPE html>
-<html>
-
-<head>
-    <title>Activity Logs</title>
-    <link rel="stylesheet" href="../css/style.css">
-    <link rel="stylesheet" href="../css/activity-logs.css">
-</head>
+<?php include("__DIR__ . '/../includes/header.php"); ?>
 
 <body>
 
