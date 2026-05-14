@@ -24,6 +24,12 @@ if (isset($_POST['btnLogin'])) {
 
         $user = mysqli_fetch_assoc($loginResult);
 
+        // 🔒 CHECK IF LOCKED FIRST
+        if ($user['is_locked'] == 1) {
+            header("Location: index.php?error=locked");
+            exit();
+        }
+
         // FIX: handle plain text password in DB (no hash mismatch issues)
         if ($user['password'] === $password) {
 
@@ -72,6 +78,25 @@ if (isset($_POST['btnLogin'])) {
                 <?= $error ?>
             </p>
         <?php endif; ?>
+
+        <!-- LOCKED POPUP -->
+        <?php if (isset($_GET['error']) && $_GET['error'] == 'locked') { ?>
+
+            <div id="popup" class="popup">
+                🚫 Your account has been locked. Please contact the administrator.
+            </div>
+
+            <script>
+                setTimeout(() => {
+                    const popup = document.getElementById("popup");
+                    if (popup) {
+                        popup.style.opacity = "0";
+                        setTimeout(() => popup.remove(), 500);
+                    }
+                }, 5000);
+            </script>
+
+        <?php } ?>
 
         <form method="POST">
 
