@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 14, 2026 at 06:46 AM
+-- Generation Time: May 14, 2026 at 08:31 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -32,30 +32,37 @@ CREATE TABLE `activity_logs` (
   `user_id` int(11) DEFAULT NULL,
   `action` varchar(255) DEFAULT NULL,
   `task_id` int(11) DEFAULT NULL,
-  `log_time` timestamp NOT NULL DEFAULT current_timestamp()
+  `log_time` timestamp NOT NULL DEFAULT current_timestamp(),
+  `ip_address` varchar(50) DEFAULT NULL,
+  `user_agent` text DEFAULT NULL,
+  `module` varchar(100) DEFAULT NULL,
+  `severity` enum('info','warning','critical') DEFAULT 'info',
+  `status` varchar(50) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `activity_logs`
 --
 
-INSERT INTO `activity_logs` (`id`, `user_id`, `action`, `task_id`, `log_time`) VALUES
-(1, 3, 'Created a task', 1, '2026-05-10 20:00:49'),
-(2, 3, 'Updated task status to Not Started', 1, '2026-05-10 20:07:18'),
-(3, 3, 'Updated task status to ', 0, '2026-05-10 20:59:47'),
-(4, 3, 'Updated task status to In Progress (Task ID: 1)', 1, '2026-05-10 21:09:42'),
-(5, 3, 'Submitted incident report', NULL, '2026-05-11 18:08:55'),
-(6, 3, 'Submitted incident report', NULL, '2026-05-11 18:09:43'),
-(7, 3, 'SUCCESS LOGIN from IP: ::1', NULL, '2026-05-13 12:43:57'),
-(8, 2, 'SUCCESS LOGIN from IP: ::1', NULL, '2026-05-13 12:44:12'),
-(9, 1, 'SUCCESS LOGIN from IP: ::1', NULL, '2026-05-13 12:44:54'),
-(10, 3, 'FAILED LOGIN (1/3) from IP: ::1', NULL, '2026-05-13 12:53:56'),
-(11, 3, 'FAILED LOGIN (2/3) from IP: ::1', NULL, '2026-05-13 12:54:07'),
-(12, 3, 'FAILED LOGIN (3/3) from IP: ::1', NULL, '2026-05-13 12:56:06'),
-(13, 3, 'ACCOUNT LOCKED + EMAIL SENT', NULL, '2026-05-13 12:56:08'),
-(14, 1, 'FAILED LOGIN (1/3) from IP: ::1', NULL, '2026-05-13 13:02:06'),
-(15, 1, 'FAILED LOGIN (2/3) from IP: ::1', NULL, '2026-05-13 13:02:36'),
-(16, 1, 'FAILED LOGIN (3/3) from IP: ::1', NULL, '2026-05-13 13:04:47');
+INSERT INTO `activity_logs` (`id`, `user_id`, `action`, `task_id`, `log_time`, `ip_address`, `user_agent`, `module`, `severity`, `status`) VALUES
+(1, 3, 'Created a task', 1, '2026-05-10 20:00:49', NULL, NULL, NULL, 'info', NULL),
+(2, 3, 'Updated task status to Not Started', 1, '2026-05-10 20:07:18', NULL, NULL, NULL, 'info', NULL),
+(3, 3, 'Updated task status to ', 0, '2026-05-10 20:59:47', NULL, NULL, NULL, 'info', NULL),
+(4, 3, 'Updated task status to In Progress (Task ID: 1)', 1, '2026-05-10 21:09:42', NULL, NULL, NULL, 'info', NULL),
+(5, 3, 'Submitted incident report', NULL, '2026-05-11 18:08:55', NULL, NULL, NULL, 'info', NULL),
+(6, 3, 'Submitted incident report', NULL, '2026-05-11 18:09:43', NULL, NULL, NULL, 'info', NULL),
+(7, 3, 'SUCCESS LOGIN from IP: ::1', NULL, '2026-05-13 12:43:57', NULL, NULL, NULL, 'info', NULL),
+(8, 2, 'SUCCESS LOGIN from IP: ::1', NULL, '2026-05-13 12:44:12', NULL, NULL, NULL, 'info', NULL),
+(9, 1, 'SUCCESS LOGIN from IP: ::1', NULL, '2026-05-13 12:44:54', NULL, NULL, NULL, 'info', NULL),
+(10, 3, 'FAILED LOGIN (1/3) from IP: ::1', NULL, '2026-05-13 12:53:56', NULL, NULL, NULL, 'info', NULL),
+(11, 3, 'FAILED LOGIN (2/3) from IP: ::1', NULL, '2026-05-13 12:54:07', NULL, NULL, NULL, 'info', NULL),
+(12, 3, 'FAILED LOGIN (3/3) from IP: ::1', NULL, '2026-05-13 12:56:06', NULL, NULL, NULL, 'info', NULL),
+(13, 3, 'ACCOUNT LOCKED + EMAIL SENT', NULL, '2026-05-13 12:56:08', NULL, NULL, NULL, 'info', NULL),
+(14, 1, 'FAILED LOGIN (1/3) from IP: ::1', NULL, '2026-05-13 13:02:06', NULL, NULL, NULL, 'info', NULL),
+(15, 1, 'FAILED LOGIN (2/3) from IP: ::1', NULL, '2026-05-13 13:02:36', NULL, NULL, NULL, 'info', NULL),
+(16, 1, 'FAILED LOGIN (3/3) from IP: ::1', NULL, '2026-05-13 13:04:47', NULL, NULL, NULL, 'info', NULL),
+(17, 3, 'Updated task status to Not Started', 1, '2026-05-14 18:26:10', NULL, NULL, NULL, 'info', NULL),
+(18, 3, 'Updated task status to In Progress', 1, '2026-05-14 18:26:13', NULL, NULL, NULL, 'info', NULL);
 
 -- --------------------------------------------------------
 
@@ -190,6 +197,7 @@ CREATE TABLE `users` (
   `employee_id` varchar(20) DEFAULT NULL,
   `username` varchar(150) DEFAULT NULL,
   `email` varchar(100) DEFAULT NULL,
+  `contact_number` varchar(20) NOT NULL,
   `password` varchar(255) DEFAULT NULL,
   `role` enum('admin','security','employee') NOT NULL,
   `department` varchar(50) DEFAULT NULL,
@@ -205,10 +213,24 @@ CREATE TABLE `users` (
 -- Dumping data for table `users`
 --
 
-INSERT INTO `users` (`id`, `employee_id`, `username`, `email`, `password`, `role`, `department`, `violation_count`, `is_locked`, `login_attempts`, `last_login_ip`, `last_login_at`, `must_change_password`) VALUES
-(3, NULL, 'jade', 'employee@gmail.com', 'employee123\r\n', 'employee', NULL, 0, 0, 0, NULL, NULL, 1),
-(5, NULL, 'admin', 'admin@gmail.com', 'admin123', 'admin', NULL, 0, 0, 0, NULL, NULL, 1),
-(6, '', 'piyo', 'jadee.fiona4@gmail.com', 'jade123', 'employee', NULL, 0, 0, 0, NULL, NULL, 1);
+INSERT INTO `users` (`id`, `employee_id`, `username`, `email`, `contact_number`, `password`, `role`, `department`, `violation_count`, `is_locked`, `login_attempts`, `last_login_ip`, `last_login_at`, `must_change_password`) VALUES
+(3, NULL, 'jade', 'employee@gmail.com', '', 'Password123', 'employee', NULL, 0, 0, 0, NULL, NULL, 1),
+(5, NULL, 'admin', 'admin@gmail.com', '', 'admin123', 'admin', NULL, 0, 0, 0, NULL, NULL, 1),
+(6, 'IT-101', 'Fiona Jade Villanueva', 'jadee.fiona4@gmail.com', '09166314087', 'employee123', 'employee', 'IT', 0, 0, 0, NULL, NULL, 1),
+(12, 'IT-EMP-00012', 'John Doe', 'piyoacadnotes@gmail.com', '09123456789', 'password123', 'employee', 'IT', 0, 0, 0, NULL, NULL, 1);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `user_policies`
+--
+
+CREATE TABLE `user_policies` (
+  `id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `policy_id` int(11) NOT NULL,
+  `assigned_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -290,6 +312,12 @@ ALTER TABLE `users`
   ADD UNIQUE KEY `employee_id` (`employee_id`);
 
 --
+-- Indexes for table `user_policies`
+--
+ALTER TABLE `user_policies`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indexes for table `violations`
 --
 ALTER TABLE `violations`
@@ -304,7 +332,7 @@ ALTER TABLE `violations`
 -- AUTO_INCREMENT for table `activity_logs`
 --
 ALTER TABLE `activity_logs`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
 
 --
 -- AUTO_INCREMENT for table `compliance_records`
@@ -346,7 +374,13 @@ ALTER TABLE `tasks`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+
+--
+-- AUTO_INCREMENT for table `user_policies`
+--
+ALTER TABLE `user_policies`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `violations`
