@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 14, 2026 at 06:35 AM
+-- Generation Time: May 14, 2026 at 06:46 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -207,7 +207,8 @@ CREATE TABLE `users` (
 
 INSERT INTO `users` (`id`, `employee_id`, `username`, `email`, `password`, `role`, `department`, `violation_count`, `is_locked`, `login_attempts`, `last_login_ip`, `last_login_at`, `must_change_password`) VALUES
 (3, NULL, 'jade', 'employee@gmail.com', 'employee123\r\n', 'employee', NULL, 0, 0, 0, NULL, NULL, 1),
-(5, NULL, 'admin', 'admin@gmail.com', 'admin123', 'admin', NULL, 0, 0, 0, NULL, NULL, 1);
+(5, NULL, 'admin', 'admin@gmail.com', 'admin123', 'admin', NULL, 0, 0, 0, NULL, NULL, 1),
+(6, '', 'piyo', 'jadee.fiona4@gmail.com', 'jade123', 'employee', NULL, 0, 0, 0, NULL, NULL, 1);
 
 -- --------------------------------------------------------
 
@@ -345,7 +346,7 @@ ALTER TABLE `tasks`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `violations`
