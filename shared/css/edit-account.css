@@ -6,6 +6,9 @@
     padding:30px;
     border-radius:20px;
     text-align:center;
+    background:#ffffff;
+    border:1px solid rgba(0,0,0,0.08);
+    color:#000;
 }
 
 /* AVATAR */
@@ -14,11 +17,12 @@
     height:80px;
     margin:0 auto 20px auto;
     border-radius:50%;
-    background:rgba(255,255,255,0.2);
+    background:#f5f4f1;
     display:flex;
     justify-content:center;
     align-items:center;
     font-size:30px;
+    color:#000;
 }
 
 /* INPUT */
@@ -41,6 +45,14 @@
     border:none;
     outline:none;
     font-size:14px;
+    background:#faf9f6;
+    color:#000;
+    border:1px solid rgba(0,0,0,0.08);
+}
+
+.input-group input[readonly]{
+    background:#f3f2ee;
+    cursor:not-allowed;
 }
 
 /* BUTTON */
@@ -49,11 +61,12 @@
     margin-top:10px;
     padding:14px;
     background:white;
-    color:#052241;
+    color:#000;
     font-weight:600;
     border-radius:12px;
     cursor:pointer;
     transition:0.3s;
+    border:1px solid rgba(0,0,0,0.08);
 }
 
 .btn.full:hover{
@@ -62,10 +75,10 @@
 
 /* SUCCESS MESSAGE */
 .success-box{
-    background:rgba(40,167,69,0.2);
+    background:rgba(40,167,69,0.15);
     padding:10px;
     border-radius:12px;
     margin-bottom:15px;
-    color:white;
+    color:#000;
     font-size:14px;
 }
