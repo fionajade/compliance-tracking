@@ -1,4 +1,4 @@
-<div class="sidebar glass">
+<div class="sidebar glass"> //updated sidebar
 
     <?php
     if (session_status() !== PHP_SESSION_ACTIVE) {
