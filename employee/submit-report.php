@@ -92,6 +92,14 @@ if (isset($_POST['incident-reports'])) {
 
         <div class="main-content glass">
 
+            <?php
+            $currentSection = 'Submit Report';
+            ?>
+
+            <div class="section-bar">
+                <div class="section-name"><?= htmlspecialchars($currentSection) ?></div>
+            </div>
+
             <h1>🚨 Submit Incident Report</h1>
 
             <?php if ($message != "") { ?>

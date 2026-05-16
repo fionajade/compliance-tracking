@@ -47,6 +47,14 @@ $tasks = mysqli_query($conn, "
 
     <div class="main-content glass">
 
+        <?php
+        $currentSection = 'Tasks';
+        ?>
+
+        <div class="section-bar">
+            <div class="section-name"><?= htmlspecialchars($currentSection) ?></div>
+        </div>
+
         <h1>📋 My Tasks</h1>
         <p style="opacity:0.7;">Receive assigned tasks and update progress</p>
 

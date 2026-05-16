@@ -79,15 +79,29 @@ $violations = mysqli_num_rows(mysqli_query(
 
         <div class="main-content glass">
 
-            <h1>Welcome, <?php echo $name; ?></h1>
+            <?php
+            $firstName = explode(' ', trim($name))[0] ?? $name;
+            $currentSection = 'Dashboard';
+            ?>
+
+            <div class="section-bar">
+                <div class="section-name"><?= htmlspecialchars($currentSection) ?></div>
+            </div>
+
+            <div class="dashboard-hero glass">
+                <div class="hero-text">
+                    <h1>Welcome, <?= htmlspecialchars($firstName) ?></h1>
+                    <p>Here is your daily compliance and risk overview. You have tasks and incidents that need your attention.</p>
+                </div>
+                <div class="hero-summary">
+                    <div class="hero-summary-title">Compliance Rate</div>
+                    <div class="hero-summary-value"><?php echo round($rate); ?>%</div>
+                    <div class="hero-summary-meta"><?php echo $compliant; ?> compliant · <?php echo $pending; ?> pending · <?php echo $totalIncidents; ?> incidents</div>
+                </div>
+            </div>
 
             <!-- CARDS -->
             <div class="cards">
-
-                <div class="card glass">
-                    <h3>Compliance Rate</h3>
-                    <p><?php echo round($rate); ?>%</p>
-                </div>
 
                 <div class="card glass">
                     <h3>Compliant</h3>

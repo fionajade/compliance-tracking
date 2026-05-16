@@ -33,6 +33,14 @@ $totalReports = mysqli_num_rows($query);
 
 <div class="main-content glass">
 
+    <?php
+    $currentSection = 'My Reports';
+    ?>
+
+    <div class="section-bar">
+        <div class="section-name"><?= htmlspecialchars($currentSection) ?></div>
+    </div>
+
     <h1>🚨 My Incident Reports</h1>
 
     <p style="opacity:0.7;">

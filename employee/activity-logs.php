@@ -29,6 +29,14 @@ $query = mysqli_query($conn, "
 
     <div class="main-content glass">
 
+        <?php
+        $currentSection = 'Activity Logs';
+        ?>
+
+        <div class="section-bar">
+            <div class="section-name"><?= htmlspecialchars($currentSection) ?></div>
+        </div>
+
         <h1>📜 Activity Timeline</h1>
         <p style="opacity:0.7; margin-bottom:20px;">
             Track everything you do inside the system.

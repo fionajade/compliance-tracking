@@ -57,6 +57,14 @@ if (isset($_POST['update_account'])) {
 
     <div class="main-content glass">
 
+        <?php
+        $currentSection = 'My Profile';
+        ?>
+
+        <div class="section-bar">
+            <div class="section-name"><?= htmlspecialchars($currentSection) ?></div>
+        </div>
+
         <h1>👤 My Profile</h1>
 
         <p style="opacity:0.7; margin-bottom:20px;">

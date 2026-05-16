@@ -35,6 +35,14 @@ $total = mysqli_num_rows($query);
 
 <div class="main-content glass">
 
+    <?php
+    $currentSection = 'Compliance';
+    ?>
+
+    <div class="section-bar">
+        <div class="section-name"><?= htmlspecialchars($currentSection) ?></div>
+    </div>
+
     <h1>📜 Follow Policies</h1>
 
     <p style="opacity:0.7;">
